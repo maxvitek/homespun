@@ -47,4 +47,19 @@ class HueTimeSeries(Base):
     y = Column(Float)
 
     def __repr__(self):
-        return '<Hue(%s::%s::%s::)>' % (self.datetime, self,device_name, self.state)
+        return '<Hue(%s::%s::%s::)>' % (self.datetime, self.device_name, self.state)
+
+
+class NestTimeSeries(Base):
+    '''
+    Collects nest data
+    '''
+    __tablename__ = 'nest'
+    datetime = Column(DateTime, default=datetime.datetime.utcnow, primary_key=True)
+    temperature = Column(Float)
+    humidity = Column(Float)
+
+    def __repr__(self):
+        return '<Nest(%s::%s::%s::)>' % (self.datetime, self.temperature, self.humidity)
+
+

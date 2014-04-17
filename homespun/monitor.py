@@ -11,6 +11,10 @@ from models import WemoTimeSeries
 from phue import Bridge
 from models import HueTimeSeries
 
+# nest imports
+from nest import Nest as NestAPI
+from models import NestTimeSeries
+
 
 class Monitor(object):
     '''
@@ -68,5 +72,20 @@ class Hue(Monitor):
                                            y = light['state']['xy'][1],
                                            )
             session.add(hue_data_point)
+        session.commit()
+
+
+class Nest(Monitor):
+    def __init__(self):
+        self.nest = NestAPI(settings.NEST_USER, settings.NEST_PASSWD)
+
+    def status(self):
+        self.nest = NestAPI(settings.NEST_USER, settings.NEST_PASSWD)
+        nest_data_point = NestTimeSeries(
+                                         datetime=datetime.datetime.utcnow(),
+                                         temperature=self.nest.temperature,
+                                         humidity=self.nest.humidity,
+                                         )
+        session.add(nest_data_point)
         session.commit()
 
