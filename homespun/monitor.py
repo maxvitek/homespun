@@ -42,6 +42,7 @@ class Wemo(Monitor):
         self.env.start()
 
     def status(self):
+        self.env.upnp.clients = {}
         self.env.discover(5)
         for device in self.env.devices.keys():
             wemo_data_point = WemoTimeSeries(
