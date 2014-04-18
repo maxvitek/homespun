@@ -25,7 +25,7 @@ class WemoTimeSeries(Base):
     state = Column(Boolean)
 
     def __repr__(self):
-        return '<Wemo(%s::%s::%s)>' % (self.datetime, self.device_name, self.state)
+        return '<Wemo(%s::%s::%s)>' % (self.datetime, self.device_name, str(self.state))
 
 
 class HueTimeSeries(Base):
@@ -47,7 +47,7 @@ class HueTimeSeries(Base):
     y = Column(Float)
 
     def __repr__(self):
-        return '<Hue(%s::%s::%s::)>' % (self.datetime, self.device_name, self.state)
+        return '<Hue(%s::%s::%s::)>' % (self.datetime, self.device_name, str(self.state))
 
 
 class NestTimeSeries(Base):
@@ -60,6 +60,22 @@ class NestTimeSeries(Base):
     humidity = Column(Float)
 
     def __repr__(self):
-        return '<Nest(%s::%s::%s::)>' % (self.datetime, self.temperature, self.humidity)
+        return '<Nest(%s::%s::%s::)>' % (self.datetime, str(self.temperature), str(self.humidity))
 
 
+class ApexTimeSeries(Base):
+    '''
+    apex aquacontroller
+    '''
+    __tablename__ = 'apex'
+    datetime = Column(DateTime, default=datetime.datetime.utcnow, primary_key=True)
+    device_name = Column(String(50), primary_key=True)
+    state = Column(Boolean, nullable=True)
+    value = Column(Float, nullable=True)
+
+    def __repr__(self):
+        if self.state:
+            metric = self.state
+        else:
+            metric = self.value
+        return '<Apex(%s::%s::%s)>' % (self.datetime, self.device_name, str(metric))

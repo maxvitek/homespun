@@ -15,6 +15,10 @@ from models import HueTimeSeries
 from nest import Nest as NestAPI
 from models import NestTimeSeries
 
+# apex imports
+from apex import Apex as ApexAPI
+from models import ApexTimeSeries
+
 
 class Monitor(object):
     '''
@@ -89,3 +93,34 @@ class Nest(Monitor):
         session.add(nest_data_point)
         session.commit()
 
+
+class Apex(Monitor):
+    def __init__(self):
+        self.apex = ApexAPI(settings.APEX_IP_ADDRESS)
+
+    def status(self):
+        if self.apex.outlets:
+            self.apex.outlets = []
+        if self.apex.probes:
+            self.apex.probes = []
+
+        self.apex.get_api()
+        for outlet in self.apex.outlets:
+            if outlet.state in [0, 1]:
+                state = False
+            else:
+                state = True
+            apex_data_point = ApexTimeSeries(
+                                             datetime=datetime.datetime.utcnow(),
+                                             device_name=outlet.name,
+                                             state=state,
+                                             )
+            session.add(apex_data_point)
+        for probe in self.apex.probes:
+            apex_data_point = ApexTimeSeries(
+                                             datetime=datetime.datetime.utcnow(),
+                                             device_name=probe.name,
+                                             value=float(probe.value),
+                                             )
+            session.add(apex_data_point)
+        session.commit()
