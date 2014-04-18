@@ -40,9 +40,9 @@ class Wemo(Monitor):
     def __init__(self):
         self.env = Environment(with_cache=False)
         self.env.start()
-        self.env.discover(5)
 
     def status(self):
+        self.env.discover(5)
         for device in self.env.devices.keys():
             wemo_data_point = WemoTimeSeries(
                                              datetime=datetime.datetime.utcnow(),
