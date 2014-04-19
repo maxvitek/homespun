@@ -40,15 +40,18 @@ class Wemo(Monitor):
     def __init__(self):
         self.env = Environment(with_cache=False)
         self.env.start()
+        self.env.discover(10)
 
     def status(self):
         self.env.upnp.clients = {}
-        self.env.discover(5)
         for device in self.env.devices.keys():
+            state = self.env.devices[device].get_state(force_update=True)
+            if state == 8:
+                state = 1 ;
             wemo_data_point = WemoTimeSeries(
                                              datetime=datetime.datetime.utcnow(),
-                                             device_name = device,
-                                             state = self.env.devices[device].get_state(),
+                                             device_name=device,
+                                             state=state,
                                              )
             session.add(wemo_data_point)
         session.commit()
@@ -64,17 +67,17 @@ class Hue(Monitor):
         for light in self.lights:
             hue_data_point = HueTimeSeries(
                                            datetime=datetime.datetime.utcnow(),
-                                           device_name = light['name'],
-                                           alert = light['state']['alert'],
-                                           brightness = light['state']['bri'],
-                                           colormode = light['state']['colormode'],
-                                           effect = light['state']['effect'],
-                                           hue = light['state']['hue'],
-                                           state = light['state']['on'],
-                                           reachable = light['state']['reachable'],
-                                           saturation = light['state']['sat'],
-                                           x = light['state']['xy'][0],
-                                           y = light['state']['xy'][1],
+                                           device_name=light['name'],
+                                           alert=light['state']['alert'],
+                                           brightness=light['state']['bri'],
+                                           colormode=light['state']['colormode'],
+                                           effect=light['state']['effect'],
+                                           hue=light['state']['hue'],
+                                           state=light['state']['on'],
+                                           reachable=light['state']['reachable'],
+                                           saturation=light['state']['sat'],
+                                           x=light['state']['xy'][0],
+                                           y=light['state']['xy'][1],
                                            )
             session.add(hue_data_point)
         session.commit()
