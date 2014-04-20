@@ -2,6 +2,9 @@ import datetime
 import logging
 import signal
 import time
+import socket
+import subprocess
+import re
 
 from homespun.monitor import Wemo, Hue, Nest, Apex, Roomba
 
@@ -26,7 +29,14 @@ def monitor():
             if not w:
                 logging.info('attempting to set up wemo')
                 try:
-                    w = Wemo()
+                    try:
+                        w = Wemo()
+                    except socket.error as e:
+                        lsof_output = subprocess.check_output(['lsof', '-i', ':8989'])
+                        pids = set(re.findall(r'python\s+(\d+)\s', test))
+                        for pid in pids:
+                            subprocess.call(['kill', '-KILL', pid])
+                        w = Wemo()
                 except:
                     logging.warning('wemo setup failed')
                     pass
