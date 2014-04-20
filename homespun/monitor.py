@@ -19,6 +19,10 @@ from models import NestTimeSeries
 from apex import Apex as ApexAPI
 from models import ApexTimeSeries
 
+# roomba imports
+from roowifi import Roomba as RoombaAPI
+from models import RoombaTimeSeries
+
 
 class Monitor(object):
     '''
@@ -128,3 +132,29 @@ class Apex(Monitor):
                                              )
             session.add(apex_data_point)
         session.commit()
+
+
+class Roomba(Monitor):
+    def __init__(self):
+        self.roombas = []
+        for r in settings.ROOMBAS:
+            this_roomba = RoombaAPI(r.ip_address)
+            this_roomba.name = r.name
+            self.roombas.append(this_roomba)
+
+        def status(self):
+            for roomba in self.roombas:
+                telemetry = roomba.telemetry()['response']
+                roomba_data_point = RoombaTimeSeries(
+                        datetime=datetime.datetime.utcnow(),
+                        device_name='roomba_' + roomba.name,
+                        remote_opcode=int(telemetry['r10']),
+                        buttons=int(telemetry['r11']),
+                        distance=float(telemetry['r12']),
+                        angle=float(telemetry['rr13']),
+                        current=float(telemetry['r16']),
+                        change=float(telemetry['r18']),
+                        capacity=float(telemetry['r19']),
+                        )
+                session.add(roomba_data_point)
+            session.commit()
