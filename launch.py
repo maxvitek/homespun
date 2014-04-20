@@ -33,7 +33,7 @@ def monitor():
                         w = Wemo()
                     except socket.error as e:
                         lsof_output = subprocess.check_output(['lsof', '-i', ':8989'])
-                        pids = set(re.findall(r'python\s+(\d+)\s', test))
+                        pids = set(re.findall(r'python\s+(\d+)\s', lsof_output))
                         for pid in pids:
                             subprocess.call(['kill', '-KILL', pid])
                         w = Wemo()
