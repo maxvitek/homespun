@@ -45,6 +45,7 @@ class Wemo(Monitor):
         self.env = Environment(with_cache=False)
         self.env.start()
         self.env.discover(10)
+        self.env.discover(10)
 
     def status(self):
         self.env.upnp.clients = {}
