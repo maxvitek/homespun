@@ -22,10 +22,10 @@ def monitor():
         a = None
         r = None
         i = 0
-
-        while i < 60:
-            i += 1
-            if (datetime.datetime.utcnow() - mark_time).total_seconds() > 60:
+        
+        if (datetime.datetime.utcnow() - mark_time).total_seconds() > 60:
+            while i < 60:
+                i += 1
                 logging.info('Mark! ' + str(datetime.datetime.now()))
                 mark_time = datetime.datetime.utcnow()
             
