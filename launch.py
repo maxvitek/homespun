@@ -14,15 +14,17 @@ logging.basicConfig(filename='homespun.log',level=logging.DEBUG)
 def monitor():
     logging.info('Starting monitoring service')
     mark_time = datetime.datetime(2014, 1, 1)  # make a Mark immediately
+    
+    w = None
+    h = None
+    n = None
+    a = None
+    r = None
 
     while True:
-        w = None
-        h = None
-        n = None
-        a = None
-        r = None
         i = 0
-        
+        if w:
+            w.env.discover(10)
         if (datetime.datetime.utcnow() - mark_time).total_seconds() > 60:
             while i < 60:
                 i += 1
